@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AstralX綠茵預言家 | Green Pitch Prophet</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, 'PingFang TC', 'Microsoft JhengHei', 'Helvetica Neue', sans-serif;
+    background: #0a0e27;
+    color: #e8e8e8;
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    background: linear-gradient(135deg, #0a0e27 0%, #1a1040 50%, #0d2060 100%);
+    border-bottom: 2px solid #FFD700;
+    padding: 16px 52px 14px;
+    text-align: center;
+    position: sticky; top: 0; z-index: 100;
+  }
+  .header-title { font-size: 20px; font-weight: 700; color: #FFD700; line-height: 1.3; }
+  .header-sub { font-size: 12px; color: #aaa; margin-top: 4px; }
+  .lang-btn {
+    position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+    background: transparent; border: 1.5px solid #FFD700; color: #FFD700;
+    padding: 5px 11px; border-radius: 14px; font-size: 12px; font-weight: 700;
+    cursor: pointer; transition: all .2s;
+  }
+  .lang-btn:hover { background: #FFD700; color: #000; }
+
+  /* ── PROGRESS BAR ── */
+  .progress-bar-wrap { background: #111; padding: 10px 20px; display: flex; align-items: center; gap: 12px; }
+  .progress-bar-bg { flex: 1; height: 6px; background: #333; border-radius: 3px; overflow: hidden; }
+  .progress-bar-fill { height: 100%; background: linear-gradient(90deg, #C8102E, #FFD700); border-radius: 3px; transition: width .4s; }
+  .progress-text { font-size: 13px; color: #FFD700; white-space: nowrap; min-width: 70px; text-align: right; }
+
+  /* ── STEPS ── */
+  .step { display: none; }
+  .step.active { display: block; }
+  .step-body { max-width: 780px; margin: 0 auto; padding: 24px 16px 80px; }
+
+  /* ── CARDS ── */
+  .card {
+    background: linear-gradient(135deg, #141830, #1c2040);
+    border: 1px solid #2a3060;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 16px;
+  }
+  .card-title { font-size: 17px; font-weight: 700; color: #FFD700; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+  .card-title .badge { background: #C8102E; color: #fff; font-size: 11px; padding: 2px 8px; border-radius: 10px; font-weight: 600; }
+
+  /* ── FORM INPUTS ── */
+  .form-group { margin-bottom: 16px; }
+  .form-label { display: block; font-size: 13px; color: #aaa; margin-bottom: 6px; }
+  .form-input {
+    width: 100%; padding: 11px 14px; font-size: 15px;
+    background: #0e1230; border: 1px solid #2a3870; border-radius: 8px;
+    color: #fff; outline: none; transition: border-color .2s;
+  }
+  .form-input:focus { border-color: #FFD700; }
+  .form-input::placeholder { color: #555; }
+
+  /* ── GROUP TABS ── */
+  .group-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 20px; }
+  .group-tab {
+    padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 600;
+    border: 1.5px solid #2a3870; background: transparent; color: #aaa;
+    cursor: pointer; transition: all .2s;
+  }
+  .group-tab:hover { border-color: #FFD700; color: #FFD700; }
+  .group-tab.active { background: #FFD700; color: #000; border-color: #FFD700; }
+  .group-tab.done { border-color: #2ecc71; color: #2ecc71; }
+  .group-tab.done.active { background: #2ecc71; color: #000; border-color: #2ecc71; }
+
+  /* ── GROUP PANEL ── */
+  .group-panel { display: none; }
+  .group-panel.active { display: block; }
+  .group-header { font-size: 14px; color: #888; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid #2a3060; }
+
+  /* ── MATCH CARD ── */
+  .match-item {
+    background: #0d1128; border: 1px solid #1e2550;
+    border-radius: 10px; padding: 14px 16px; margin-bottom: 10px; transition: border-color .2s;
+  }
+  .match-item.predicted { border-color: #2a5040; }
+  .match-meta { font-size: 11px; color: #666; margin-bottom: 10px; display: flex; justify-content: space-between; }
+  .match-teams { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 12px; }
+  .team-name { font-size: 15px; font-weight: 700; color: #e8e8e8; flex: 1; }
+  .team-name.away { text-align: right; }
+  .vs-badge { background: #1e2550; border-radius: 6px; padding: 4px 10px; font-size: 12px; color: #888; white-space: nowrap; }
+
+  /* ── PREDICTION OPTIONS ── */
+  .prediction-opts { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
+  .pred-btn {
+    padding: 8px 4px; border-radius: 8px; font-size: 13px; text-align: center;
+    border: 1.5px solid #2a3060; background: transparent; color: #888;
+    cursor: pointer; transition: all .2s; line-height: 1.3;
+  }
+  .pred-btn:hover { border-color: #FFD700; color: #FFD700; }
+  .pred-btn.selected-1 { background: #1a3a6a; border-color: #4a90d9; color: #fff; }
+  .pred-btn.selected-X { background: #2a2a10; border-color: #FFD700; color: #FFD700; }
+  .pred-btn.selected-2 { background: #3a1020; border-color: #C8102E; color: #ff6a6a; }
+  .pred-btn .opt-label { display: block; font-size: 10px; opacity: .7; }
+  .pred-btn .opt-val { display: block; font-weight: 700; font-size: 14px; }
+
+  /* ── BUTTONS ── */
+  .btn {
+    padding: 13px 28px; border-radius: 10px; font-size: 15px; font-weight: 700;
+    border: none; cursor: pointer; transition: all .2s; display: inline-flex; align-items: center; gap: 8px;
+  }
+  .btn-primary { background: linear-gradient(135deg, #C8102E, #a00020); color: #fff; }
+  .btn-primary:hover { background: linear-gradient(135deg, #e01040, #C8102E); transform: translateY(-1px); }
+  .btn-gold { background: linear-gradient(135deg, #FFD700, #ffb300); color: #000; }
+  .btn-gold:hover { background: linear-gradient(135deg, #ffe040, #FFD700); transform: translateY(-1px); }
+  .btn-outline { background: transparent; border: 1.5px solid #2a3870; color: #aaa; }
+  .btn-outline:hover { border-color: #FFD700; color: #FFD700; }
+  .btn-sm { padding: 8px 16px; font-size: 13px; }
+  .btn:disabled { opacity: .4; cursor: not-allowed; transform: none !important; }
+  .btn-row { display: flex; gap: 12px; margin-top: 20px; flex-wrap: wrap; }
+
+  /* ── WELCOME ── */
+  .welcome-banner {
+    background: linear-gradient(135deg, #1a0a30, #0d2060);
+    border: 1px solid #FFD70044; border-radius: 16px;
+    padding: 32px 24px; text-align: center; margin-bottom: 24px;
+  }
+  .welcome-trophy { font-size: 56px; margin-bottom: 12px; }
+  .welcome-title { font-size: 26px; font-weight: 700; color: #FFD700; margin-bottom: 8px; }
+  .welcome-desc { font-size: 14px; color: #bbb; line-height: 1.7; margin-bottom: 20px; }
+  .rules-list { text-align: left; display: inline-block; }
+  .rules-list li { font-size: 13px; color: #aaa; margin-bottom: 6px; padding-left: 4px; list-style: none; }
+  .rules-list li::before { content: "✦ "; color: #FFD700; }
+
+  /* ── STEP 3 ── */
+  .summary-box { background: #0d1128; border: 1px solid #2a3870; border-radius: 10px; padding: 20px; margin-bottom: 16px; }
+  .summary-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #1e2550; font-size: 14px; }
+  .summary-row:last-child { border-bottom: none; }
+  .summary-key { color: #888; }
+  .summary-val { color: #FFD700; font-weight: 600; }
+  .code-box { background: #050a1a; border: 1.5px dashed #FFD700; border-radius: 10px; padding: 16px; margin: 16px 0; position: relative; }
+  .code-label { font-size: 12px; color: #888; margin-bottom: 8px; }
+  .code-text { word-break: break-all; font-size: 11px; color: #7eb8ff; font-family: 'Courier New', monospace; line-height: 1.6; max-height: 80px; overflow: auto; }
+  .copy-btn { position: absolute; top: 10px; right: 10px; background: #FFD700; color: #000; border: none; border-radius: 6px; padding: 4px 10px; font-size: 12px; font-weight: 700; cursor: pointer; }
+  .copy-btn:hover { background: #ffe040; }
+
+  /* ── ADMIN ── */
+  #admin-panel { display: none; background: #05080f; min-height: 100vh; padding: 24px 16px; }
+  #admin-panel.visible { display: block; }
+  .admin-header { text-align: center; padding: 20px 0 24px; border-bottom: 1px solid #2a3870; margin-bottom: 24px; }
+  .admin-title { font-size: 22px; font-weight: 700; color: #FFD700; }
+  .admin-tabs { display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: wrap; }
+  .admin-tab { padding: 9px 18px; border-radius: 8px; font-size: 14px; border: 1.5px solid #2a3870; background: transparent; color: #aaa; cursor: pointer; }
+  .admin-tab.active { background: #FFD700; color: #000; border-color: #FFD700; font-weight: 700; }
+  .admin-section { display: none; }
+  .admin-section.active { display: block; }
+  .admin-match { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-bottom: 1px solid #1a2040; }
+  .admin-match-name { flex: 1; font-size: 13px; color: #ccc; }
+  .admin-match-opts { display: flex; gap: 6px; }
+  .admin-opt { padding: 5px 10px; border-radius: 6px; font-size: 12px; font-weight: 700; border: 1.5px solid #2a3060; background: transparent; color: #666; cursor: pointer; }
+  .admin-opt.sel-1 { background: #1a3a6a; border-color: #4a90d9; color: #fff; }
+  .admin-opt.sel-X { background: #2a2a10; border-color: #FFD700; color: #FFD700; }
+  .admin-opt.sel-2 { background: #3a1020; border-color: #C8102E; color: #ff6a6a; }
+  .score-entry { margin-bottom: 14px; }
+  .score-textarea { width: 100%; height: 80px; padding: 10px; background: #0e1230; border: 1px solid #2a3870; border-radius: 8px; color: #7eb8ff; font-size: 12px; font-family: monospace; resize: vertical; }
+  .leaderboard { width: 100%; border-collapse: collapse; margin-top: 16px; }
+  .leaderboard th { background: #141830; color: #FFD700; padding: 10px 14px; text-align: left; font-size: 13px; }
+  .leaderboard td { padding: 10px 14px; border-bottom: 1px solid #1a2040; font-size: 13px; }
+  .leaderboard tr:nth-child(even) td { background: #0d1020; }
+  .rank-1 td:first-child { color: #FFD700; font-weight: 700; font-size: 16px; }
+  .rank-2 td:first-child { color: #c0c0c0; font-weight: 700; }
+  .rank-3 td:first-child { color: #cd7f32; font-weight: 700; }
+  .score-highlight { color: #2ecc71; font-weight: 700; }
+  .accuracy-bar { height: 6px; background: #1e2550; border-radius: 3px; margin-top: 4px; }
+  .accuracy-fill { height: 100%; background: #2ecc71; border-radius: 3px; }
+
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: #FFD700; color: #000; padding: 10px 24px; border-radius: 20px; font-size: 14px; font-weight: 700; z-index: 999; opacity: 0; transition: opacity .3s; pointer-events: none; white-space: nowrap; }
+  .toast.show { opacity: 1; }
+
+  /* ── CHAMPION GRID ── */
+  .champion-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .champ-btn { padding: 10px 6px; border-radius: 8px; font-size: 12px; text-align: center; line-height: 1.4; border: 1.5px solid #2a3060; background: transparent; color: #aaa; cursor: pointer; transition: all .2s; }
+  .champ-btn:hover { border-color: #FFD700; color: #FFD700; }
+  .champ-btn.selected { background: linear-gradient(135deg, #1a3060, #0d1a40); border-color: #FFD700; color: #FFD700; font-weight: 700; }
+  .champ-btn .flag { display: block; font-size: 22px; margin-bottom: 4px; }
+
+  @media (max-width: 500px) {
+    .champion-grid { grid-template-columns: repeat(3, 1fr); }
+    .prediction-opts { grid-template-columns: 1fr 1fr 1fr; }
+    .pred-btn { padding: 7px 2px; font-size: 12px; }
+    .match-teams { gap: 6px; }
+    .team-name { font-size: 13px; }
+    .btn-row { flex-direction: column; }
+    .header { padding: 14px 48px 12px; }
+  }
+</style>
+</head>
+<body>
+
+<div id="main-app">
+  <!-- Header -->
+  <div class="header" style="position:relative">
+    <div class="header-title" id="hdr-title"></div>
+    <div class="header-sub" id="hdr-sub"></div>
+    <button class="lang-btn" onclick="toggleLang()" id="lang-btn"></button>
+  </div>
+
+  <!-- Progress Bar -->
+  <div class="progress-bar-wrap" id="progress-wrap" style="display:none">
+    <div class="progress-bar-bg"><div class="progress-bar-fill" id="progress-fill" style="width:0%"></div></div>
+    <div class="progress-text" id="progress-text">0 / 72</div>
+  </div>
+
+  <!-- STEP 1 -->
+  <div class="step active" id="step-1">
+    <div class="step-body">
+      <div class="welcome-banner">
+        <div class="welcome-trophy">🏆</div>
+        <div class="welcome-title" id="wb-title"></div>
+        <div class="welcome-desc" id="wb-desc"></div>
+        <ul class="rules-list">
+          <li id="rule-1"></li>
+          <li id="rule-2"></li>
+          <li id="rule-3"></li>
+          <li id="rule-4"></li>
+        </ul>
+      </div>
+      <div class="card" id="info-card">
+        <div class="card-title" id="form-title"></div>
+        <div class="form-group">
+          <label class="form-label" id="uid-label"></label>
+          <input class="form-input" id="input-uid" maxlength="60">
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-gold" id="btn-next-champ" onclick="goStep2()"></button>
+        </div>
+      </div>
+      <div class="card" id="champion-card" style="display:none">
+        <div class="card-title" id="champ-title"><span id="champ-title-text"></span> <span class="badge" id="champ-badge"></span></div>
+        <p style="font-size:13px;color:#888;margin-bottom:16px" id="champ-desc"></p>
+        <div class="champion-grid" id="champion-grid"></div>
+        <div class="btn-row" style="margin-top:20px">
+          <button class="btn btn-outline" id="btn-back-champ" onclick="hideChampion()"></button>
+          <button class="btn btn-gold" id="btn-start-pred" onclick="goStep2FromChampion()"></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="step" id="step-2">
+    <div class="step-body">
+      <div class="card" style="margin-bottom:20px">
+        <div class="card-title" id="pred-title"></div>
+        <div class="group-tabs" id="group-tabs"></div>
+        <div id="group-panels"></div>
+        <div class="btn-row">
+          <button class="btn btn-outline" id="btn-back-s2" onclick="goStep1()"></button>
+          <button class="btn btn-primary" id="btn-to-submit" onclick="goStep3()"></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 3 -->
+  <div class="step" id="step-3">
+    <div class="step-body">
+      <div class="card">
+        <div class="card-title" id="confirm-title"></div>
+        <div class="summary-box" id="summary-box"></div>
+        <div class="code-box" id="code-box" style="display:none">
+          <div class="code-label" id="code-label"></div>
+          <div class="code-text" id="code-text"></div>
+          <button class="copy-btn" id="copy-btn-top" onclick="copyCode()"></button>
+        </div>
+        <div id="submit-area">
+          <p style="font-size:13px;color:#888;margin-bottom:16px" id="confirm-hint"></p>
+          <div class="btn-row">
+            <button class="btn btn-outline" id="btn-modify" onclick="goStep2()"></button>
+            <button class="btn btn-gold" id="btn-submit" onclick="submitSurvey()"></button>
+          </div>
+        </div>
+        <div id="submitted-area" style="display:none;text-align:center;padding:20px 0">
+          <div style="font-size:48px;margin-bottom:12px">🎉</div>
+          <div style="font-size:20px;font-weight:700;color:#FFD700;margin-bottom:8px" id="success-title"></div>
+          <p style="font-size:14px;color:#aaa;margin-bottom:20px" id="success-hint"></p>
+          <button class="btn btn-outline btn-sm" id="btn-copy-code" onclick="copyCode()"></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div id="admin-panel">
+  <div style="max-width:900px;margin:0 auto">
+    <div class="admin-header">
+      <div class="admin-title" id="admin-title"></div>
+    </div>
+    <div class="admin-tabs">
+      <button class="admin-tab active" id="atab-results" onclick="showAdminTab('results')"></button>
+      <button class="admin-tab" id="atab-score" onclick="showAdminTab('score')"></button>
+      <button class="admin-tab" id="atab-board" onclick="showAdminTab('board')"></button>
+    </div>
+    <div class="admin-section active" id="admin-results">
+      <div style="font-size:13px;color:#888;margin-bottom:16px" id="results-hint"></div>
+      <div id="admin-matches-list"></div>
+      <div style="margin-top:20px;display:flex;gap:12px;flex-wrap:wrap">
+        <button class="btn btn-gold btn-sm" id="btn-save" onclick="saveResults()"></button>
+        <button class="btn btn-outline btn-sm" id="btn-export" onclick="exportResults()"></button>
+        <button class="btn btn-outline btn-sm" id="btn-import" onclick="importResults()"></button>
+      </div>
+      <div id="results-export-box" style="display:none;margin-top:16px">
+        <div class="code-box">
+          <div class="code-label" id="export-label"></div>
+          <div class="code-text" id="results-code-text"></div>
+          <button class="copy-btn" onclick="copyResultsCode()" id="copy-results-btn"></button>
+        </div>
+      </div>
+    </div>
+    <div class="admin-section" id="admin-score">
+      <div style="font-size:13px;color:#888;margin-bottom:16px" id="score-hint"></div>
+      <div id="score-entries">
+        <div class="score-entry">
+          <div style="font-size:12px;color:#888;margin-bottom:4px" id="user-code-label-1"></div>
+          <textarea class="score-textarea" id="first-score-textarea"></textarea>
+        </div>
+      </div>
+      <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn btn-outline btn-sm" id="btn-add-user" onclick="addScoreEntry()"></button>
+        <button class="btn btn-gold btn-sm" id="btn-calc" onclick="calcScores()"></button>
+      </div>
+    </div>
+    <div class="admin-section" id="admin-board">
+      <div style="font-size:13px;color:#888;margin-bottom:16px" id="board-empty"></div>
+      <table class="leaderboard" id="leaderboard-table" style="display:none">
+        <thead>
+          <tr>
+            <th id="th-rank"></th>
+            <th>AstralX UID</th>
+            <th id="th-champion"></th>
+            <th id="th-correct"></th>
+            <th id="th-accuracy"></th>
+          </tr>
+        </thead>
+        <tbody id="leaderboard-body"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ============================================================
+//  CONFIG — 填入 Google Apps Script 部署後的 URL
+// ============================================================
+const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbzX6fh2abM_iMUELNgXJPPBA2c9keYYwkitZ5OpKPQA_DQZkq4lCdoM4YfpzpRfZAuq/exec';
+
+// ============================================================
+//  LANGUAGE DETECTION
+// ============================================================
+const savedLang = localStorage.getItem('wc2026_lang');
+const browserLang = (navigator.language || navigator.userLanguage || 'zh').toLowerCase();
+let LANG = savedLang || (browserLang.startsWith('zh') ? 'zh' : 'en');
+
+function toggleLang() {
+  localStorage.setItem('wc2026_lang', LANG === 'zh' ? 'en' : 'zh');
+  location.reload();
+}
+
+// ============================================================
+//  TRANSLATIONS
+// ============================================================
+const T = {
+  zh: {
+    headerTitle: '⚽ AstralX 綠茵預言家',
+    headerSub: '瓜分 50,000 USDT 超級獎池 · FIFA World Cup 2026',
+    langBtn: 'EN',
+    welcomeTitle: '競猜贏好禮！',
+    welcomeDesc: '預測2026年美加墨世界杯小組賽全部72場比賽的勝平負結果，並競猜最終冠軍',
+    rule1: '本次競猜涵蓋12組 × 6場，共72場小組賽',
+    rule2: '每場預測勝 / 平局 / 負三個選項',
+    rule3: '額外競猜本屆世界杯最終冠軍球隊',
+    rule4: '提交後生成專屬預測碼，請妥善保存',
+    formTitle: '📋 填寫參與資訊',
+    uidLabel: 'AstralX UID',
+    uidPlaceholder: '請輸入您的 AstralX UID',
+    btnNextChampion: '下一步：選冠軍 →',
+    champTitleText: '🏆 冠軍競猜',
+    champBadge: '必填',
+    champDesc: '您認為哪支球隊將贏得2026年世界杯冠軍？',
+    btnBack: '← 返回',
+    btnStartPredictions: '開始場次預測 →',
+    predTitle: '⚽ 小組賽預測',
+    btnViewSubmit: '查看並提交 →',
+    confirmTitle: '✅ 確認並提交',
+    codeLabel: '🔑 您的專屬預測碼（請截圖或複製保存）',
+    btnCopy: '複製',
+    confirmHint: '確認資訊無誤後點擊提交，系統將生成您的專屬預測碼',
+    btnModify: '← 修改預測',
+    btnSubmit: '🚀 提交競猜',
+    successTitle: '提交成功！',
+    successHint: '請保存您的預測碼，主辦方將在賽後公布結果',
+    btnCopyCode: '📋 複製預測碼',
+    matchLabel: '場次',
+    homeWin: '勝',
+    draw: '平局',
+    awayLoss: '負',
+    summaryUID: 'AstralX UID',
+    summaryChampion: '冠軍預測',
+    summaryCount: '預測場數',
+    summaryDetail: (d, total, pct) => `${d} / ${total} 場（完成率 ${pct}%）`,
+    notSelected: '未選擇',
+    toastUID: '請填寫 AstralX UID',
+    toastChampion: '請選擇您預測的冠軍球隊',
+    toastSubmit: '🎉 提交成功！請保存您的預測碼',
+    toastCopied: '已複製到剪貼簿 ✓',
+    confirmMissing: n => `您還有 ${n} 場比賽未預測，是否繼續提交？`,
+    adminTitle: '🔧 管理員面板 · AstralX 綠茵預言家',
+    tabResults: '錄入賽果',
+    tabScore: '計算得分',
+    tabBoard: '排行榜',
+    resultsHint: '請在比賽結束後錄入每場實際結果（「1」=主隊勝，「X」=平局，「2」=客隊勝）',
+    btnSave: '💾 儲存賽果',
+    btnExport: '📤 匯出賽果碼',
+    btnImport: '📥 匯入賽果碼',
+    exportLabel: '賽果碼（可發給其他管理員匯入）',
+    scoreHint: '貼上用戶的預測碼，點擊「計算」查看得分，可新增多個用戶',
+    userCodeLabel: i => `用戶預測碼 #${i}`,
+    userCodePlaceholder: '貼上用戶的預測碼...',
+    btnAddUser: '+ 新增用戶',
+    btnCalc: '⚡ 計算所有得分',
+    boardEmpty: '請先在「計算得分」標籤頁輸入預測碼並計算，排行榜將在此顯示。',
+    thRank: '排名', thChampion: '冠軍預測', thCorrect: '正確場數', thAccuracy: '準確率',
+    revealed: n => `/ ${n}場已揭曉`,
+    toastSaved: '賽果已儲存 ✓',
+    toastImported: '賽果匯入成功 ✓',
+    toastCopyShort: '已複製 ✓',
+    promptAdmin: '請輸入管理員密碼：',
+    alertWrongPwd: '密碼錯誤',
+    promptImport: '貼上賽果碼：',
+    alertImportError: '賽果碼格式錯誤',
+    decodeFail: '解碼失敗',
+  },
+  en: {
+    headerTitle: '⚽ AstralX Green Pitch Prophet',
+    headerSub: 'Share 50,000 USDT Prize Pool · FIFA World Cup 2026',
+    langBtn: '繁中',
+    welcomeTitle: 'Predict & Win!',
+    welcomeDesc: 'Predict the Win / Draw / Loss outcome of all 72 Group Stage matches of the 2026 FIFA World Cup, and guess the Champion!',
+    rule1: 'Covers 12 Groups × 6 matches = 72 Group Stage games in total',
+    rule2: 'Win / Draw / Loss for each match',
+    rule3: 'Bonus: predict the overall World Cup Champion',
+    rule4: 'A unique prediction code is generated on submission — save it!',
+    formTitle: '📋 Participant Information',
+    uidLabel: 'AstralX UID',
+    uidPlaceholder: 'Enter your AstralX UID',
+    btnNextChampion: 'Next: Pick Champion →',
+    champTitleText: '🏆 Champion Prediction',
+    champBadge: 'Required',
+    champDesc: 'Which team do you think will win the 2026 FIFA World Cup?',
+    btnBack: '← Back',
+    btnStartPredictions: 'Start Match Predictions →',
+    predTitle: '⚽ Group Stage Predictions',
+    btnViewSubmit: 'Review & Submit →',
+    confirmTitle: '✅ Confirm & Submit',
+    codeLabel: '🔑 Your Prediction Code (screenshot or copy to save)',
+    btnCopy: 'Copy',
+    confirmHint: 'Verify your info then click submit. Your unique prediction code will be generated.',
+    btnModify: '← Edit Predictions',
+    btnSubmit: '🚀 Submit',
+    successTitle: 'Submitted!',
+    successHint: 'Keep your prediction code — results will be announced after the matches.',
+    btnCopyCode: '📋 Copy Code',
+    matchLabel: 'Match',
+    homeWin: 'Win',
+    draw: 'Draw',
+    awayLoss: 'Loss',
+    summaryUID: 'AstralX UID',
+    summaryChampion: 'Champion Pick',
+    summaryCount: 'Predictions Made',
+    summaryDetail: (d, total, pct) => `${d} / ${total} matches (${pct}% complete)`,
+    notSelected: 'Not selected',
+    toastUID: 'Please enter your AstralX UID',
+    toastChampion: 'Please select a champion team',
+    toastSubmit: '🎉 Submitted! Please save your prediction code',
+    toastCopied: 'Copied to clipboard ✓',
+    confirmMissing: n => `You have ${n} matches unpredicted. Continue submitting?`,
+    adminTitle: '🔧 Admin Panel · AstralX Green Pitch Prophet',
+    tabResults: 'Enter Results',
+    tabScore: 'Calculate Scores',
+    tabBoard: 'Leaderboard',
+    resultsHint: 'Enter the actual result for each match after it ends ("1" = Home Win, "X" = Draw, "2" = Away Win)',
+    btnSave: '💾 Save Results',
+    btnExport: '📤 Export Results Code',
+    btnImport: '📥 Import Results Code',
+    exportLabel: 'Results Code (share with other admins to import)',
+    scoreHint: 'Paste user prediction codes and click "Calculate" to score them. Add multiple users.',
+    userCodeLabel: i => `User Prediction Code #${i}`,
+    userCodePlaceholder: 'Paste user prediction code...',
+    btnAddUser: '+ Add User',
+    btnCalc: '⚡ Calculate All Scores',
+    boardEmpty: 'Go to "Calculate Scores" tab, paste prediction codes and calculate — the leaderboard will appear here.',
+    thRank: 'Rank', thChampion: 'Champion Pick', thCorrect: 'Correct', thAccuracy: 'Accuracy',
+    revealed: n => `/ ${n} revealed`,
+    toastSaved: 'Results saved ✓',
+    toastImported: 'Results imported ✓',
+    toastCopyShort: 'Copied ✓',
+    promptAdmin: 'Enter admin password:',
+    alertWrongPwd: 'Incorrect password',
+    promptImport: 'Paste results code:',
+    alertImportError: 'Invalid results code format',
+    decodeFail: 'Decode failed',
+  }
+};
+const t = T[LANG];
+
+// ============================================================
+//  TEAM NAME MAPPING (Chinese → English)
+// ============================================================
+const TEAM_EN = {
+  '墨西哥':'Mexico','南非':'South Africa','韓國':'South Korea','捷克':'Czechia',
+  '加拿大':'Canada','波黑':'Bosnia & Herz.','卡達':'Qatar','瑞士':'Switzerland',
+  '巴西':'Brazil','摩洛哥':'Morocco','海地':'Haiti','蘇格蘭':'Scotland',
+  '美國':'USA','巴拉圭':'Paraguay','澳大利亞':'Australia','土耳其':'Türkiye',
+  '德國':'Germany','庫拉索':'Curaçao','科特迪瓦':"Côte d'Ivoire",'厄瓜多爾':'Ecuador',
+  '荷蘭':'Netherlands','日本':'Japan','瑞典':'Sweden','突尼斯':'Tunisia',
+  '比利時':'Belgium','埃及':'Egypt','伊朗':'IR Iran','紐西蘭':'New Zealand',
+  '西班牙':'Spain','佛得角':'Cabo Verde','沙烏地阿拉伯':'Saudi Arabia','烏拉圭':'Uruguay',
+  '法國':'France','塞內加爾':'Senegal','伊拉克':'Iraq','挪威':'Norway',
+  '阿根廷':'Argentina','阿爾及利亞':'Algeria','奧地利':'Austria','約旦':'Jordan',
+  '葡萄牙':'Portugal','剛果（金）':'Congo DR','烏茲別克斯坦':'Uzbekistan','哥倫比亞':'Colombia',
+  '英格蘭':'England','克羅地亞':'Croatia','加納':'Ghana','巴拿馬':'Panama',
+};
+const tn = name => LANG === 'zh' ? name : (TEAM_EN[name] || name);
+
+// ============================================================
+//  DATA
+// ============================================================
+const GROUPS_DATA = {
+  A: {
+    name:"A組", nameEn:"Group A", emoji:"🇲🇽",
+    teams:["墨西哥","南非","韓國","捷克"],
+    matches:[
+      {id:"A1",home:"墨西哥",away:"南非",   date:"Jun 11"},
+      {id:"A2",home:"韓國",  away:"捷克",   date:"Jun 11"},
+      {id:"A3",home:"墨西哥",away:"韓國",   date:"Jun 18"},
+      {id:"A4",home:"捷克",  away:"南非",   date:"Jun 18"},
+      {id:"A5",home:"捷克",  away:"墨西哥", date:"Jun 24"},
+      {id:"A6",home:"南非",  away:"韓國",   date:"Jun 24"},
+    ]
+  },
+  B: {
+    name:"B組", nameEn:"Group B", emoji:"🇨🇦",
+    teams:["加拿大","波黑","卡達","瑞士"],
+    matches:[
+      {id:"B1",home:"加拿大",away:"波黑",   date:"Jun 12"},
+      {id:"B2",home:"卡達",  away:"瑞士",   date:"Jun 13"},
+      {id:"B3",home:"瑞士",  away:"波黑",   date:"Jun 18"},
+      {id:"B4",home:"加拿大",away:"卡達",   date:"Jun 18"},
+      {id:"B5",home:"瑞士",  away:"加拿大", date:"Jun 24"},
+      {id:"B6",home:"波黑",  away:"卡達",   date:"Jun 24"},
+    ]
+  },
+  C: {
+    name:"C組", nameEn:"Group C", emoji:"🇧🇷",
+    teams:["巴西","摩洛哥","海地","蘇格蘭"],
+    matches:[
+      {id:"C1",home:"巴西",  away:"摩洛哥", date:"Jun 13"},
+      {id:"C2",home:"海地",  away:"蘇格蘭", date:"Jun 13"},
+      {id:"C3",home:"巴西",  away:"海地",   date:"Jun 19"},
+      {id:"C4",home:"蘇格蘭",away:"摩洛哥", date:"Jun 19"},
+      {id:"C5",home:"蘇格蘭",away:"巴西",   date:"Jun 24"},
+      {id:"C6",home:"摩洛哥",away:"海地",   date:"Jun 24"},
+    ]
+  },
+  D: {
+    name:"D組", nameEn:"Group D", emoji:"🇺🇸",
+    teams:["美國","巴拉圭","澳大利亞","土耳其"],
+    matches:[
+      {id:"D1",home:"美國",    away:"巴拉圭",   date:"Jun 12"},
+      {id:"D2",home:"澳大利亞",away:"土耳其",   date:"Jun 14"},
+      {id:"D3",home:"美國",    away:"澳大利亞", date:"Jun 19"},
+      {id:"D4",home:"土耳其",  away:"巴拉圭",   date:"Jun 19"},
+      {id:"D5",home:"土耳其",  away:"美國",     date:"Jun 25"},
+      {id:"D6",home:"巴拉圭",  away:"澳大利亞", date:"Jun 25"},
+    ]
+  },
+  E: {
+    name:"E組", nameEn:"Group E", emoji:"🇩🇪",
+    teams:["德國","庫拉索","科特迪瓦","厄瓜多爾"],
+    matches:[
+      {id:"E1",home:"德國",    away:"庫拉索",   date:"Jun 14"},
+      {id:"E2",home:"科特迪瓦",away:"厄瓜多爾", date:"Jun 14"},
+      {id:"E3",home:"德國",    away:"科特迪瓦", date:"Jun 20"},
+      {id:"E4",home:"厄瓜多爾",away:"庫拉索",   date:"Jun 20"},
+      {id:"E5",home:"厄瓜多爾",away:"德國",     date:"Jun 25"},
+      {id:"E6",home:"庫拉索",  away:"科特迪瓦", date:"Jun 25"},
+    ]
+  },
+  F: {
+    name:"F組", nameEn:"Group F", emoji:"🇳🇱",
+    teams:["荷蘭","日本","瑞典","突尼斯"],
+    matches:[
+      {id:"F1",home:"荷蘭",  away:"日本",   date:"Jun 14"},
+      {id:"F2",home:"瑞典",  away:"突尼斯", date:"Jun 14"},
+      {id:"F3",home:"荷蘭",  away:"瑞典",   date:"Jun 20"},
+      {id:"F4",home:"突尼斯",away:"日本",   date:"Jun 21"},
+      {id:"F5",home:"日本",  away:"瑞典",   date:"Jun 25"},
+      {id:"F6",home:"突尼斯",away:"荷蘭",   date:"Jun 25"},
+    ]
+  },
+  G: {
+    name:"G組", nameEn:"Group G", emoji:"🇧🇪",
+    teams:["比利時","埃及","伊朗","紐西蘭"],
+    matches:[
+      {id:"G1",home:"比利時",away:"埃及",   date:"Jun 15"},
+      {id:"G2",home:"伊朗",  away:"紐西蘭", date:"Jun 15"},
+      {id:"G3",home:"比利時",away:"伊朗",   date:"Jun 21"},
+      {id:"G4",home:"紐西蘭",away:"埃及",   date:"Jun 21"},
+      {id:"G5",home:"埃及",  away:"伊朗",   date:"Jun 26"},
+      {id:"G6",home:"紐西蘭",away:"比利時", date:"Jun 26"},
+    ]
+  },
+  H: {
+    name:"H組", nameEn:"Group H", emoji:"🇪🇸",
+    teams:["西班牙","佛得角","沙烏地阿拉伯","烏拉圭"],
+    matches:[
+      {id:"H1",home:"西班牙",      away:"佛得角",       date:"Jun 15"},
+      {id:"H2",home:"沙烏地阿拉伯",away:"烏拉圭",       date:"Jun 15"},
+      {id:"H3",home:"西班牙",      away:"沙烏地阿拉伯", date:"Jun 21"},
+      {id:"H4",home:"烏拉圭",      away:"佛得角",       date:"Jun 21"},
+      {id:"H5",home:"佛得角",      away:"沙烏地阿拉伯", date:"Jun 26"},
+      {id:"H6",home:"烏拉圭",      away:"西班牙",       date:"Jun 26"},
+    ]
+  },
+  I: {
+    name:"I組", nameEn:"Group I", emoji:"🇫🇷",
+    teams:["法國","塞內加爾","伊拉克","挪威"],
+    matches:[
+      {id:"I1",home:"法國",    away:"塞內加爾", date:"Jun 16"},
+      {id:"I2",home:"伊拉克",  away:"挪威",     date:"Jun 16"},
+      {id:"I3",home:"法國",    away:"伊拉克",   date:"Jun 22"},
+      {id:"I4",home:"挪威",    away:"塞內加爾", date:"Jun 22"},
+      {id:"I5",home:"挪威",    away:"法國",     date:"Jun 26"},
+      {id:"I6",home:"塞內加爾",away:"伊拉克",   date:"Jun 26"},
+    ]
+  },
+  J: {
+    name:"J組", nameEn:"Group J", emoji:"🇦🇷",
+    teams:["阿根廷","阿爾及利亞","奧地利","約旦"],
+    matches:[
+      {id:"J1",home:"阿根廷",    away:"阿爾及利亞", date:"Jun 16"},
+      {id:"J2",home:"奧地利",    away:"約旦",       date:"Jun 17"},
+      {id:"J3",home:"阿根廷",    away:"奧地利",     date:"Jun 22"},
+      {id:"J4",home:"約旦",      away:"阿爾及利亞", date:"Jun 22"},
+      {id:"J5",home:"阿爾及利亞",away:"奧地利",     date:"Jun 27"},
+      {id:"J6",home:"約旦",      away:"阿根廷",     date:"Jun 27"},
+    ]
+  },
+  K: {
+    name:"K組", nameEn:"Group K", emoji:"🇵🇹",
+    teams:["葡萄牙","剛果（金）","烏茲別克斯坦","哥倫比亞"],
+    matches:[
+      {id:"K1",home:"葡萄牙",      away:"剛果（金）",   date:"Jun 17"},
+      {id:"K2",home:"烏茲別克斯坦",away:"哥倫比亞",     date:"Jun 17"},
+      {id:"K3",home:"葡萄牙",      away:"烏茲別克斯坦", date:"Jun 23"},
+      {id:"K4",home:"哥倫比亞",    away:"剛果（金）",   date:"Jun 23"},
+      {id:"K5",home:"哥倫比亞",    away:"葡萄牙",       date:"Jun 27"},
+      {id:"K6",home:"剛果（金）",  away:"烏茲別克斯坦", date:"Jun 27"},
+    ]
+  },
+  L: {
+    name:"L組", nameEn:"Group L", emoji:"🏴󠁧󠁢󠁥󠁮󠁧󠁿",
+    teams:["英格蘭","克羅地亞","加納","巴拿馬"],
+    matches:[
+      {id:"L1",home:"英格蘭",away:"克羅地亞", date:"Jun 17"},
+      {id:"L2",home:"加納",  away:"巴拿馬",   date:"Jun 17"},
+      {id:"L3",home:"英格蘭",away:"加納",     date:"Jun 23"},
+      {id:"L4",home:"巴拿馬",away:"克羅地亞", date:"Jun 23"},
+      {id:"L5",home:"巴拿馬",away:"英格蘭",   date:"Jun 27"},
+      {id:"L6",home:"克羅地亞",away:"加納",   date:"Jun 27"},
+    ]
+  }
+};
+
+const GROUP_KEYS = Object.keys(GROUPS_DATA);
+const ALL_MATCHES = GROUP_KEYS.flatMap(g => GROUPS_DATA[g].matches);
+const TOTAL = ALL_MATCHES.length;
+
+const ALL_TEAMS = [
+  {name:"法國",      flag:"🇫🇷"}, {name:"西班牙",    flag:"🇪🇸"},
+  {name:"阿根廷",    flag:"🇦🇷"}, {name:"英格蘭",    flag:"🏴󠁧󠁢󠁥󠁮󠁧󠁿"},
+  {name:"葡萄牙",    flag:"🇵🇹"}, {name:"巴西",      flag:"🇧🇷"},
+  {name:"德國",      flag:"🇩🇪"}, {name:"荷蘭",      flag:"🇳🇱"},
+  {name:"烏拉圭",    flag:"🇺🇾"}, {name:"哥倫比亞",  flag:"🇨🇴"},
+  {name:"摩洛哥",    flag:"🇲🇦"}, {name:"美國",      flag:"🇺🇸"},
+];
+
+// ============================================================
+//  STATE
+// ============================================================
+let userInfo = {uid:'', champion:''};
+let predictions = {};
+let currentGroup = 'A';
+let predictionCode = '';
+let adminResults = {};
+let leaderboard = [];
+
+// ============================================================
+//  INIT
+// ============================================================
+(function init() {
+  const saved = localStorage.getItem('wc2026_predictions');
+  if (saved) try { predictions = JSON.parse(saved); } catch(e) {}
+  const savedAdmin = localStorage.getItem('wc2026_admin_results');
+  if (savedAdmin) try { adminResults = JSON.parse(savedAdmin); } catch(e) {}
+  const savedUser = localStorage.getItem('wc2026_user');
+  if (savedUser) try { userInfo = JSON.parse(savedUser); } catch(e) {}
+
+  applyTranslations();
+  renderChampionGrid();
+  renderGroupTabs();
+  renderGroupPanels();
+  updateProgress();
+  if (userInfo.uid) document.getElementById('input-uid').value = userInfo.uid;
+  if (window.location.hash === '#admin') showAdmin();
+})();
+
+// ============================================================
+//  APPLY TRANSLATIONS TO DOM
+// ============================================================
+function applyTranslations() {
+  document.documentElement.lang = LANG === 'zh' ? 'zh-TW' : 'en';
+  set('hdr-title', t.headerTitle);
+  set('hdr-sub', t.headerSub);
+  set('lang-btn', t.langBtn);
+  set('wb-title', t.welcomeTitle);
+  set('wb-desc', t.welcomeDesc);
+  set('rule-1', t.rule1);
+  set('rule-2', t.rule2);
+  set('rule-3', t.rule3);
+  set('rule-4', t.rule4);
+  set('form-title', t.formTitle);
+  set('uid-label', t.uidLabel);
+  attr('input-uid', 'placeholder', t.uidPlaceholder);
+  set('btn-next-champ', t.btnNextChampion);
+  set('champ-title-text', t.champTitleText);
+  set('champ-badge', t.champBadge);
+  set('champ-desc', t.champDesc);
+  set('btn-back-champ', t.btnBack);
+  set('btn-start-pred', t.btnStartPredictions);
+  set('pred-title', t.predTitle);
+  set('btn-back-s2', t.btnBack);
+  set('btn-to-submit', t.btnViewSubmit);
+  set('confirm-title', t.confirmTitle);
+  set('code-label', t.codeLabel);
+  set('copy-btn-top', t.btnCopy);
+  set('confirm-hint', t.confirmHint);
+  set('btn-modify', t.btnModify);
+  set('btn-submit', t.btnSubmit);
+  set('success-title', t.successTitle);
+  set('success-hint', t.successHint);
+  set('btn-copy-code', t.btnCopyCode);
+  set('admin-title', t.adminTitle);
+  set('atab-results', t.tabResults);
+  set('atab-score', t.tabScore);
+  set('atab-board', t.tabBoard);
+  set('results-hint', t.resultsHint);
+  set('btn-save', t.btnSave);
+  set('btn-export', t.btnExport);
+  set('btn-import', t.btnImport);
+  set('export-label', t.exportLabel);
+  set('copy-results-btn', t.btnCopy);
+  set('score-hint', t.scoreHint);
+  set('user-code-label-1', t.userCodeLabel(1));
+  attr('first-score-textarea', 'placeholder', t.userCodePlaceholder);
+  set('btn-add-user', t.btnAddUser);
+  set('btn-calc', t.btnCalc);
+  set('board-empty', t.boardEmpty);
+  set('th-rank', t.thRank);
+  set('th-champion', t.thChampion);
+  set('th-correct', t.thCorrect);
+  set('th-accuracy', t.thAccuracy);
+}
+function set(id, val) { const el = document.getElementById(id); if (el) el.textContent = val; }
+function attr(id, a, val) { const el = document.getElementById(id); if (el) el.setAttribute(a, val); }
+
+// ============================================================
+//  RENDER
+// ============================================================
+function renderChampionGrid() {
+  const grid = document.getElementById('champion-grid');
+  if (!grid) return;
+  grid.innerHTML = ALL_TEAMS.map(team =>
+    `<button class="champ-btn ${userInfo.champion===team.name?'selected':''}" onclick="selectChampion('${team.name}')">
+      <span class="flag">${team.flag}</span>${tn(team.name)}
+    </button>`
+  ).join('');
+}
+
+function renderGroupTabs() {
+  const wrap = document.getElementById('group-tabs');
+  wrap.innerHTML = GROUP_KEYS.map(g => {
+    const grp = GROUPS_DATA[g];
+    const done = grp.matches.every(m => predictions[m.id]);
+    const label = LANG === 'zh' ? grp.name : grp.nameEn;
+    return `<button class="group-tab ${g===currentGroup?'active':''} ${done?'done':''}"
+      onclick="switchGroup('${g}')">${grp.emoji} ${label}</button>`;
+  }).join('');
+}
+
+function renderGroupPanels() {
+  const wrap = document.getElementById('group-panels');
+  wrap.innerHTML = GROUP_KEYS.map(g => {
+    const grp = GROUPS_DATA[g];
+    const label = LANG === 'zh' ? grp.name : grp.nameEn;
+    const teamNames = grp.teams.map(tn).join(' / ');
+    return `<div class="group-panel ${g===currentGroup?'active':''}" id="panel-${g}">
+      <div class="group-header">${grp.emoji} <b>${label}</b> · ${teamNames}</div>
+      ${grp.matches.map(m => renderMatch(m)).join('')}
+    </div>`;
+  }).join('');
+}
+
+function renderMatch(m) {
+  const pred = predictions[m.id] || '';
+  const homeLabel = tn(m.home);
+  const awayLabel = tn(m.away);
+  return `<div class="match-item ${pred?'predicted':''}" id="match-${m.id}">
+    <div class="match-meta"><span>${m.date}</span><span>${t.matchLabel} ${m.id}</span></div>
+    <div class="match-teams">
+      <div class="team-name">${homeLabel}</div>
+      <div class="vs-badge">VS</div>
+      <div class="team-name away">${awayLabel}</div>
+    </div>
+    <div class="prediction-opts">
+      <button class="pred-btn ${pred==='1'?'selected-1':''}" onclick="predict('${m.id}','1')">
+        <span class="opt-val">1</span>
+        <span class="opt-label">${homeLabel} ${t.homeWin}</span>
+      </button>
+      <button class="pred-btn ${pred==='X'?'selected-X':''}" onclick="predict('${m.id}','X')">
+        <span class="opt-val">X</span>
+        <span class="opt-label">${t.draw}</span>
+      </button>
+      <button class="pred-btn ${pred==='2'?'selected-2':''}" onclick="predict('${m.id}','2')">
+        <span class="opt-val">2</span>
+        <span class="opt-label">${awayLabel} ${t.homeWin}</span>
+      </button>
+    </div>
+  </div>`;
+}
+
+function refreshMatch(id) {
+  const m = ALL_MATCHES.find(x => x.id === id);
+  if (!m) return;
+  const el = document.getElementById('match-' + id);
+  if (el) el.outerHTML = renderMatch(m);
+}
+
+function updateProgress() {
+  const done = Object.keys(predictions).filter(k => ALL_MATCHES.find(m=>m.id===k)).length;
+  document.getElementById('progress-fill').style.width = (done/TOTAL*100) + '%';
+  document.getElementById('progress-text').textContent = `${done} / ${TOTAL}`;
+}
+
+function switchGroup(g) {
+  currentGroup = g;
+  document.querySelectorAll('.group-tab').forEach(el => {
+    const grp = GROUPS_DATA[g];
+    const label = LANG === 'zh' ? grp.name : grp.nameEn;
+    el.classList.toggle('active', el.textContent.includes(label));
+  });
+  document.querySelectorAll('.group-panel').forEach(el => {
+    el.classList.toggle('active', el.id === 'panel-' + g);
+  });
+}
+
+// ============================================================
+//  PREDICTIONS
+// ============================================================
+function predict(matchId, val) {
+  predictions[matchId] = val;
+  localStorage.setItem('wc2026_predictions', JSON.stringify(predictions));
+  refreshMatch(matchId);
+  updateProgress();
+  renderGroupTabs();
+}
+
+// ============================================================
+//  NAVIGATION
+// ============================================================
+function goStep1() {
+  document.getElementById('step-1').classList.add('active');
+  document.getElementById('step-2').classList.remove('active');
+  document.getElementById('step-3').classList.remove('active');
+  document.getElementById('progress-wrap').style.display = 'none';
+  document.getElementById('champion-card').style.display = 'none';
+  document.getElementById('info-card').style.display = 'block';
+}
+
+function goStep2() {
+  const uid = document.getElementById('input-uid').value.trim();
+  if (!uid) { showToast(t.toastUID); return; }
+  userInfo.uid = uid;
+  localStorage.setItem('wc2026_user', JSON.stringify(userInfo));
+  document.getElementById('champion-card').style.display = 'block';
+  document.getElementById('info-card').style.display = 'none';
+  renderChampionGrid();
+}
+
+function hideChampion() {
+  document.getElementById('champion-card').style.display = 'none';
+  document.getElementById('info-card').style.display = 'block';
+}
+
+function selectChampion(name) {
+  userInfo.champion = name;
+  renderChampionGrid();
+}
+
+function goStep2FromChampion() {
+  if (!userInfo.champion) { showToast(t.toastChampion); return; }
+  localStorage.setItem('wc2026_user', JSON.stringify(userInfo));
+  document.getElementById('step-1').classList.remove('active');
+  document.getElementById('step-2').classList.add('active');
+  document.getElementById('step-3').classList.remove('active');
+  document.getElementById('progress-wrap').style.display = 'flex';
+  document.getElementById('champion-card').style.display = 'none';
+  document.getElementById('info-card').style.display = 'block';
+}
+
+function goStep3() {
+  const done = Object.keys(predictions).filter(k => ALL_MATCHES.find(m=>m.id===k)).length;
+  if (done < TOTAL) {
+    if (!confirm(t.confirmMissing(TOTAL - done))) return;
+  }
+  buildSummary();
+  document.getElementById('step-1').classList.remove('active');
+  document.getElementById('step-2').classList.remove('active');
+  document.getElementById('step-3').classList.add('active');
+  document.getElementById('progress-wrap').style.display = 'flex';
+}
+
+function buildSummary() {
+  const done = Object.keys(predictions).filter(k => ALL_MATCHES.find(m=>m.id===k)).length;
+  const pct = Math.round(done/TOTAL*100);
+  const champTeam = ALL_TEAMS.find(tm => tm.name === userInfo.champion);
+  document.getElementById('summary-box').innerHTML = `
+    <div class="summary-row"><span class="summary-key">${t.summaryUID}</span><span class="summary-val">${userInfo.uid}</span></div>
+    <div class="summary-row"><span class="summary-key">${t.summaryChampion}</span><span class="summary-val">${champTeam ? champTeam.flag+' '+tn(champTeam.name) : t.notSelected}</span></div>
+    <div class="summary-row"><span class="summary-key">${t.summaryCount}</span><span class="summary-val">${t.summaryDetail(done, TOTAL, pct)}</span></div>
+  `;
+}
+
+// ============================================================
+//  SUBMIT
+// ============================================================
+async function submitSurvey() {
+  const submitBtn = document.getElementById('btn-submit');
+  submitBtn.disabled = true;
+  submitBtn.textContent = LANG === 'zh' ? '提交中…' : 'Submitting…';
+
+  const payload = { v:1, u:userInfo.uid, ch:userInfo.champion, l:LANG, t:Math.floor(Date.now()/1000), p:predictions };
+  const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
+  predictionCode = encoded;
+
+  // 發送到 Google Sheets
+  await postToSheet({
+    uid: userInfo.uid,
+    champion: userInfo.champion,
+    lang: LANG,
+    code: encoded,
+    timestamp: Date.now()
+  });
+
+  document.getElementById('code-text').textContent = encoded;
+  document.getElementById('code-box').style.display = 'block';
+  document.getElementById('submit-area').style.display = 'none';
+  document.getElementById('submitted-area').style.display = 'block';
+  localStorage.setItem('wc2026_submitted_code', encoded);
+  showToast(t.toastSubmit);
+}
+
+// 靜默 POST 到 Google Apps Script Webhook
+async function postToSheet(data) {
+  if (!WEBHOOK_URL) return;
+  try {
+    await fetch(WEBHOOK_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(data)
+    });
+  } catch(e) {
+    console.warn('Webhook post failed (non-blocking):', e);
+  }
+}
+
+function copyCode() {
+  navigator.clipboard.writeText(document.getElementById('code-text').textContent)
+    .then(() => showToast(t.toastCopied));
+}
+
+// ============================================================
+//  ADMIN
+// ============================================================
+function showAdmin() {
+  const pwd = prompt(t.promptAdmin);
+  if (pwd !== 'Admin2026') { alert(t.alertWrongPwd); return; }
+  document.getElementById('main-app').style.display = 'none';
+  document.getElementById('admin-panel').classList.add('visible');
+  renderAdminMatches();
+}
+
+function showAdminTab(tab) {
+  document.querySelectorAll('.admin-tab').forEach((el,i) => {
+    el.classList.toggle('active', ['results','score','board'][i] === tab);
+  });
+  document.querySelectorAll('.admin-section').forEach(el => {
+    el.classList.toggle('active', el.id === 'admin-' + tab);
+  });
+}
+
+function renderAdminMatches() {
+  const list = document.getElementById('admin-matches-list');
+  list.innerHTML = GROUP_KEYS.map(g => {
+    const grp = GROUPS_DATA[g];
+    const label = LANG === 'zh' ? grp.name : grp.nameEn;
+    return `<div style="margin-bottom:8px">
+      <div style="font-size:13px;font-weight:700;color:#FFD700;padding:10px 14px;background:#141830;border-radius:8px 8px 0 0">${grp.emoji} ${label}</div>
+      ${grp.matches.map(m => {
+        const r = adminResults[m.id] || '';
+        return `<div class="admin-match">
+          <div class="admin-match-name">${m.date} · ${tn(m.home)} vs ${tn(m.away)}</div>
+          <div class="admin-match-opts">
+            <button class="admin-opt ${r==='1'?'sel-1':''}" onclick="setResult('${m.id}','1')">1</button>
+            <button class="admin-opt ${r==='X'?'sel-X':''}" onclick="setResult('${m.id}','X')">X</button>
+            <button class="admin-opt ${r==='2'?'sel-2':''}" onclick="setResult('${m.id}','2')">2</button>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>`;
+  }).join('');
+}
+
+function setResult(matchId, val) { adminResults[matchId] = val; renderAdminMatches(); }
+
+function saveResults() {
+  localStorage.setItem('wc2026_admin_results', JSON.stringify(adminResults));
+  showToast(t.toastSaved);
+}
+
+function exportResults() {
+  const code = btoa(unescape(encodeURIComponent(JSON.stringify({type:'results',r:adminResults}))));
+  document.getElementById('results-export-box').style.display = 'block';
+  document.getElementById('results-code-text').textContent = code;
+}
+
+function importResults() {
+  const code = prompt(t.promptImport);
+  if (!code) return;
+  try {
+    const data = JSON.parse(decodeURIComponent(escape(atob(code))));
+    if (data.type === 'results') {
+      adminResults = data.r;
+      localStorage.setItem('wc2026_admin_results', JSON.stringify(adminResults));
+      renderAdminMatches();
+      showToast(t.toastImported);
+    }
+  } catch(e) { alert(t.alertImportError); }
+}
+
+function copyResultsCode() {
+  navigator.clipboard.writeText(document.getElementById('results-code-text').textContent)
+    .then(() => showToast(t.toastCopyShort));
+}
+
+function addScoreEntry() {
+  const wrap = document.getElementById('score-entries');
+  const idx = wrap.children.length + 1;
+  const div = document.createElement('div');
+  div.className = 'score-entry';
+  div.innerHTML = `<div style="font-size:12px;color:#888;margin-bottom:4px">${t.userCodeLabel(idx)}</div>
+    <textarea class="score-textarea" placeholder="${t.userCodePlaceholder}"></textarea>`;
+  wrap.appendChild(div);
+}
+
+function calcScores() {
+  const textareas = document.querySelectorAll('#score-entries .score-textarea');
+  const results = [];
+  const savedR = Object.keys(adminResults).length ? adminResults :
+    (()=>{try{return JSON.parse(localStorage.getItem('wc2026_admin_results'))||{};}catch(e){return {};}})();
+  textareas.forEach(ta => {
+    const code = ta.value.trim();
+    if (!code) return;
+    try {
+      const data = JSON.parse(decodeURIComponent(escape(atob(code))));
+      const preds = data.p || {};
+      let correct = 0;
+      ALL_MATCHES.forEach(m => { if (savedR[m.id] && preds[m.id] === savedR[m.id]) correct++; });
+      const scored = Object.keys(savedR).length;
+      const champTeam = ALL_TEAMS.find(tm => tm.name === data.ch);
+      const champDisplay = champTeam ? champTeam.flag+' '+tn(champTeam.name) : (data.ch||'-');
+      results.push({ uid: data.u||'-', champion: champDisplay, correct, scored });
+    } catch(e) { results.push({ uid: t.decodeFail, champion: '-', correct:0, scored:0 }); }
+  });
+  results.sort((a,b) => b.correct - a.correct);
+  leaderboard = results;
+  renderLeaderboard();
+  showAdminTab('board');
+}
+
+function renderLeaderboard() {
+  if (!leaderboard.length) return;
+  document.getElementById('board-empty').style.display = 'none';
+  const table = document.getElementById('leaderboard-table');
+  table.style.display = 'table';
+  document.getElementById('leaderboard-body').innerHTML = leaderboard.map((r,i) => {
+    const pct = r.scored ? Math.round(r.correct/r.scored*100) : 0;
+    return `<tr class="rank-${i+1}">
+      <td>${i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1}</td>
+      <td style="color:#7eb8ff;font-size:12px">${r.uid}</td>
+      <td style="font-size:13px">${r.champion}</td>
+      <td class="score-highlight">${r.correct} <span style="color:#555;font-weight:400;font-size:11px">${t.revealed(r.scored)}</span></td>
+      <td>
+        <div style="font-size:13px;color:#2ecc71">${pct}%</div>
+        <div class="accuracy-bar"><div class="accuracy-fill" style="width:${pct}%"></div></div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+// ============================================================
+//  UTILS
+// ============================================================
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2500);
+}
+window.addEventListener('hashchange', () => { if (window.location.hash === '#admin') showAdmin(); });
+</script>
+</body>
+</html>
